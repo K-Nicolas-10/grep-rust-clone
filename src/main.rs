@@ -1,15 +1,26 @@
 use std::{env, fs::File, io::BufRead, io::BufReader, path::Path};
-
-fn main() -> std::io::Result<()> {
+fn get_args() -> Result<Vec<String>,String>{
     let args: Vec<String> = env::args().collect();
-
-    let path = if args[1].len() > 1 {
+    if args.len() < 2 {
+        return Err(String::from("No arguments provided. Try running -- help"));
+    }
+    Ok(args)
+}
+fn main() -> std::io::Result<()> {
+    
+    let args : Vec<String> = match get_args(){
+        Ok(some_args) => some_args,
+        Err(error) => {
+            eprintln!("{}",error);
+            std::process::exit(1)
+        }
+    };
+    let path = if args[1].len() > 0{
         Path::new(&args[1])
     } else {
         panic!("No directory selected");
     };
-
-    let searched_word = if args[2].len() > 1 {
+    let searched_word = if args[2].len() > 0 {
         &args[2]
     } else {
         panic!("No word provided to search for");
